@@ -1,9 +1,31 @@
+import random
 from scipy import stats
 import numpy as np
 
 DICE_1 = 0
 DICE_2 = 1
 STATES = (DICE_1, DICE_2)
+
+
+def print_rounded(matrix, precision=2):
+    np.set_printoptions(precision=precision)
+    m = np.array(matrix)
+    print m
+
+
+def random_distribution_list(list_size, distr_size):
+    result = []
+    for i in range(list_size):
+        result += [random_distribution(distr_size)]
+    return result
+
+
+def random_distribution(length):
+    lst = []
+    for j in range(length - 1):
+        lst += [random.uniform(0.0, 1.0 - sum(lst))]
+    lst += [1.0 - sum(lst)]
+    return lst
 
 
 def build_distribution(dist, name=None):
