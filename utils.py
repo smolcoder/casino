@@ -2,12 +2,17 @@ import random
 from scipy import stats
 import numpy as np
 
+
 DICE_1 = 0
 DICE_2 = 1
 STATES = (DICE_1, DICE_2)
+HIDDEN_NODES = 2
+OBSERVED_VALUES = 6
+EPS = 1E-100
 
 
 def print_rounded(matrix, precision=2):
+    # TODO make it stupid (via build-in function round())
     np.set_printoptions(precision=precision)
     m = np.array(matrix)
     print m
@@ -33,7 +38,14 @@ def build_distribution(dist, name=None):
                              name=name)
 
 
-def generate_sample(dice_1, dice_2, trans_p, start_p, size=50):
+def generate_sample(data, size=50):
+    """
+    :type data: CasinoTestData
+    """
+    dice_1 = data.emission_probability[DICE_1]
+    dice_2 = data.emission_probability[DICE_2]
+    trans_p = data.transition_probability
+    start_p = data.start_probability
     d1 = build_distribution(dice_1, str(DICE_1))
     d2 = build_distribution(dice_2, str(DICE_2))
     d1_to_d2 = build_distribution(trans_p[DICE_1])

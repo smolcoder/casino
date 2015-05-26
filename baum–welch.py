@@ -1,12 +1,7 @@
 import random
-from utils import random_distribution, print_rounded
+from tests import Test1
+from utils import random_distribution, print_rounded, HIDDEN_NODES, OBSERVED_VALUES, EPS, generate_sample
 from utils import random_distribution_list
-
-
-HIDDEN_NODES = 2
-OBSERVED_VALUES = 6
-EPS = 1E-100
-
 
 # A_UNIFORM = [[1. / HIDDEN_NODES for _ in range(HIDDEN_NODES)] for _ in range(HIDDEN_NODES)]
 # B_UNIFORM = [[1. / OBSERVED_VALUES for _ in range(OBSERVED_VALUES)] for _ in range(HIDDEN_NODES)]
@@ -142,17 +137,28 @@ def get_initials():
     return A, B, PI
 
 
-def run(seq):
+def run_on_seq(seq):
     A, B, PI = get_initials()
     return baum_welch(seq, A, B, PI)
 
 
+def run_on_test_data(data, size=10):
+    observations, _ = generate_sample(data, size=size)
+    return run_on_seq(observations)
+
+
 def main():
-    random_seq = [random.randint(1, OBSERVED_VALUES) for _ in range(10)]
-    A_RES, B_RES, PI_RES = run(random_seq)
-    print_rounded(A_RES)
-    print_rounded(B_RES)
-    print_rounded(PI_RES)
+    # random_seq = [random.randint(1, OBSERVED_VALUES) for _ in range(10)]
+    # A_RES, B_RES, PI_RES = run_on_seq(random_seq)
+    # print_rounded(A_RES)
+    # print_rounded(B_RES)
+    # print_rounded(PI_RES)
+
+    test = Test1()
+    a, b, pi = run_on_test_data(test)
+    print_rounded(a)
+    print_rounded(b)
+    print_rounded(pi)
 
 
 main()
