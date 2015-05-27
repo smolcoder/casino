@@ -160,13 +160,12 @@ def main():
 
 def perform_tests(test_count, size=100):
     test_results_a = 0
-    test_results_b = []
     test_results_pi = 0
-
-    test_results_b_dif = []
 
     #prob = 0.0
     #prob_res = 0.0
+    test_b_sum = 0.0
+    test_b_mean = 0.0
     for i in xrange(test_count):
         a, b, pi = get_initials()
         (a_res, b_res, pi_res), observations = run_on_test_data(convert_to_test_data(a, b, pi), size=size)
@@ -175,11 +174,11 @@ def perform_tests(test_count, size=100):
         b_dif = np.subtract(b_res, b)
         pi_dif = np.subtract(pi_res, pi)
 
-        a_std, b_std, pi_std = calculate_std(a, b, pi)
-        test_results_b.append(b_std)
+        b_dif = np.subtract(b[1], b_res[1])
+        b_dif = map(abs, b_dif)
+        test_b_sum += sum(b_dif)
+        test_b_mean += np.array(b_dif).mean()
 
-        a_dif_std, b_dif_std, pi_dif_std = calculate_std(a_dif, b_dif, pi_dif)
-        test_results_b_dif.append(b_dif_std)
 
         for i in range(len(a)):
             test_results_a += direction_match(a[i], a_res[i])
@@ -197,7 +196,10 @@ def perform_tests(test_count, size=100):
         #print(pi_res)
 
     print(float(test_results_a) / 2 / test_count)
-    print(np.array(test_results_b_dif).mean() / np.array(test_results_b).mean())
+    print
+    print(test_b_sum / test_count)
+    print(test_b_mean / test_count)
+    print
     print(float(test_results_pi) / test_count)
 
 perform_tests(1000, size=100)
