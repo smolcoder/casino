@@ -1,8 +1,8 @@
 from pprint import pprint
-import random
-from tests import Test1, generate_random_test_data
+import numpy as np
+from tests import *
 from utils import random_distribution, get_rounded, HIDDEN_NODES, OBSERVED_VALUES, EPS, generate_sample
-from utils import random_distribution_list
+from utils import random_distribution_list, get_probability, direction_match
 
 # A_UNIFORM = [[1. / HIDDEN_NODES for _ in range(HIDDEN_NODES)] for _ in range(HIDDEN_NODES)]
 # B_UNIFORM = [[1. / OBSERVED_VALUES for _ in range(OBSERVED_VALUES)] for _ in range(HIDDEN_NODES)]
@@ -118,17 +118,17 @@ def baum_welch(seq, A, B, PI):
         PI_STAR = calcPI(gamma)
         A_STAR = calcA(ksi, gamma, len(seq))
         B_STAR = calcB(seq, gamma)
-        if twoDimDifMax(A, A_STAR) < EPS and twoDimDifMax(B, B_STAR) < EPS and oneDimDifMax(PI, PI_STAR) < EPS:
+        if twoDimDifMax(A, A_STAR) < EPS and oneDimDifMax(B[1], B_STAR[1]) < EPS and oneDimDifMax(PI, PI_STAR) < EPS:
             return A, B, PI
         A = A_STAR
-        B = B_STAR
+        B[1] = B_STAR[1]
         PI = PI_STAR
     return None
 
 
 def get_initials():
     A = random_distribution_list(HIDDEN_NODES, HIDDEN_NODES)
-    B = random_distribution_list(HIDDEN_NODES, OBSERVED_VALUES)
+    B = [[1/6. for _ in range(6)], random_distribution(6)]
     PI = random_distribution(HIDDEN_NODES)
     return A, B, PI
 
@@ -140,16 +140,64 @@ def run_on_seq(seq):
 
 def run_on_test_data(data, size=10):
     observations, _ = generate_sample(data, size=size)
-    return run_on_seq(observations)
+    return run_on_seq(observations), observations
 
 
 def main():
     test = Test1()
-    a, b, pi = run_on_test_data(test)
+    a, b, pi = run_on_test_data(test, size=100)
     pprint(get_rounded(a))
     pprint(get_rounded(b))
     pprint(get_rounded(pi))
+    test_data_dif = CasinoTestData()
+    #print(dict_to_matrix(test.transition_probability))
+    #print(a)
+    a_dif = np.subtract(dict_to_matrix(test.transition_probability), a)
+    b_dif = np.subtract(dict_to_matrix(test.emission_probability), b)
+    pi_dif = np.subtract(test.start_probability.values(), pi)
+    print(calculate_std(dict_to_matrix(test.transition_probability), dict_to_matrix(test.emission_probability), test.start_probability.values()))
+    print(calculate_std(a_dif, b_dif, pi_dif))
 
+def perform_tests(test_count, size=100):
+    test_results_a = 0
+    test_results_b = []
+    test_results_pi = 0
 
-main()
-# print generate_random_test_data()
+    test_results_b_dif = []
+
+    #prob = 0.0
+    #prob_res = 0.0
+    for i in xrange(test_count):
+        a, b, pi = get_initials()
+        (a_res, b_res, pi_res), observations = run_on_test_data(convert_to_test_data(a, b, pi), size=size)
+
+        a_dif = np.subtract(a_res, a)
+        b_dif = np.subtract(b_res, b)
+        pi_dif = np.subtract(pi_res, pi)
+
+        a_std, b_std, pi_std = calculate_std(a, b, pi)
+        test_results_b.append(b_std)
+
+        a_dif_std, b_dif_std, pi_dif_std = calculate_std(a_dif, b_dif, pi_dif)
+        test_results_b_dif.append(b_dif_std)
+
+        for i in range(len(a)):
+            test_results_a += direction_match(a[i], a_res[i])
+
+        test_results_pi += direction_match(pi, pi_res)
+
+        #prob += get_probability(a,b,pi, observations)
+        #prob_res += get_probability(a_res, b_res,pi_res, observations)
+
+        #print(a)
+        #print(a_res)
+        #print(b)
+        #print(b_res)
+        #print(pi)
+        #print(pi_res)
+
+    print(float(test_results_a) / 2 / test_count)
+    print(np.array(test_results_b_dif).mean() / np.array(test_results_b).mean())
+    print(float(test_results_pi) / test_count)
+
+perform_tests(1000, size=100)

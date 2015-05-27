@@ -43,6 +43,25 @@ def random_distribution(length):
     lst += [1 - sum(lst)]
     return lst
 
+def find_prob(n, a, b, observations):
+    if len(observations) == 0:
+        return 1.0
+
+    if len(observations) == 1:
+        return b[n][observations[0] - 1]
+
+    prob = 0.0
+    for i in range(len(a)):
+        prob += b[n][observations[0] - 1] * a[n][i] * find_prob(i, a, b, observations[1:])
+    return prob
+
+
+def get_probability(a, b, pi, observations):
+    prob = 0.0
+    for i in range(len(pi)):
+        prob += pi[i] * find_prob(i, a, b, observations)
+    return prob
+
 
 def random_almost_uniform_distribution():
     a, b = random.randint(1, 100), random.randint(1, 100)
@@ -52,6 +71,12 @@ def random_almost_uniform_distribution():
     s = float(sum(perm))
     return [x / s for x in perm]
 
+def direction_match(prob1, prob2):
+    if (prob1[0] >= 0.5 and prob2[0] >= 0.5):
+        return 1
+    if (prob1[0] < 0.5 and prob2[0] < 0.5):
+        return 1
+    return 0
 
 def build_distribution(dist, name=None):
     return stats.rv_discrete(values=(np.array(dist.keys()), np.array(dist.values())),
