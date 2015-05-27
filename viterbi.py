@@ -49,4 +49,4 @@ def perform_tests(test_count, size=100):
     print np_res.mean()
 
 
-perform_tests(100, size=50)
+perform_tests(1000, size=20)

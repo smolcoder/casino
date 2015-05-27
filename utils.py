@@ -11,11 +11,20 @@ OBSERVED_VALUES = 6
 EPS = 1E-100
 
 
-def print_rounded(matrix, precision=2):
-    # TODO make it stupid (via build-in function round())
-    np.set_printoptions(precision=precision)
-    m = np.array(matrix)
-    print m
+def get_rounded(matrix, precision=3):
+    """
+    Use it for printing only!
+    """
+    if not isinstance(matrix, (list, tuple)):
+        return matrix
+    result = []
+    if isinstance(matrix[0], (list, tuple)):
+        for l in matrix:
+            result.append(get_rounded(l))
+    else:
+        for x in matrix:
+            result.append(round(x, ndigits=precision))
+    return result
 
 
 def random_distribution_list(list_size, distr_size):
@@ -28,8 +37,8 @@ def random_distribution_list(list_size, distr_size):
 def random_distribution(length):
     lst = []
     for j in range(length - 1):
-        lst += [random.uniform(0.0, 1.0 - sum(lst))]
-    lst += [1.0 - sum(lst)]
+        lst += [random.uniform(0., 1. - sum(lst))]
+    lst += [1 - sum(lst)]
     return lst
 
 

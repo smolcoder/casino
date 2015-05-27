@@ -1,6 +1,7 @@
+from pprint import pprint
 import random
-from tests import Test1
-from utils import random_distribution, print_rounded, HIDDEN_NODES, OBSERVED_VALUES, EPS, generate_sample
+from tests import Test1, generate_random_test_data
+from utils import random_distribution, get_rounded, HIDDEN_NODES, OBSERVED_VALUES, EPS, generate_sample
 from utils import random_distribution_list
 
 # A_UNIFORM = [[1. / HIDDEN_NODES for _ in range(HIDDEN_NODES)] for _ in range(HIDDEN_NODES)]
@@ -148,17 +149,12 @@ def run_on_test_data(data, size=10):
 
 
 def main():
-    # random_seq = [random.randint(1, OBSERVED_VALUES) for _ in range(10)]
-    # A_RES, B_RES, PI_RES = run_on_seq(random_seq)
-    # print_rounded(A_RES)
-    # print_rounded(B_RES)
-    # print_rounded(PI_RES)
-
     test = Test1()
     a, b, pi = run_on_test_data(test)
-    print_rounded(a)
-    print_rounded(b)
-    print_rounded(pi)
+    pprint(get_rounded(a))
+    pprint(get_rounded(b))
+    pprint(get_rounded(pi))
 
 
-main()
+# main()
+print generate_random_test_data()
