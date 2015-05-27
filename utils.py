@@ -43,21 +43,24 @@ def random_distribution(length):
     lst += [1 - sum(lst)]
     return lst
 
+def find_prob(n, a, b, observations):
+    if len(observations) == 0:
+        return 1.0
+
+    if len(observations) == 1:
+        return b[n][observations[0] - 1]
+
+    prob = 0.0
+    for i in range(len(a)):
+        prob += b[n][observations[0] - 1] * a[n][i] * find_prob(i, a, b, observations[1:])
+    return prob
+
+
 def get_probability(a, b, pi, observations):
-    probabilities = []
+    prob = 0.0
     for i in range(len(pi)):
-        probabilities.append((i, pi[i]))
-    for j in range(len(observations)):
-        c = observations[j]
-        new_probabilities = []
-        for n, prob in probabilities:
-            for i in range(len(a)):
-                new_probabilities.append((i, prob * b[n][c - 1] * (1.0 if (j == len(observations) - 1) else a[n][i])))
-        probabilities = new_probabilities
-    res = 0.0
-    for _, prob in probabilities:
-        res += prob
-    return res
+        prob += pi[i] * find_prob(i, a, b, observations)
+    return prob
 
 
 def build_distribution(dist, name=None):

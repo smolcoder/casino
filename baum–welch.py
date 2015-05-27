@@ -167,8 +167,8 @@ def perform_tests(test_count, size=100):
     test_results_b_dif = []
     test_results_pi_dif = []
 
-    prob = 0.0
-    prob_res = 0.0
+    #prob = 0.0
+    #prob_res = 0.0
     for i in xrange(test_count):
         a, b, pi = get_initials()
         (a_res, b_res, pi_res), observations = run_on_test_data(convert_to_test_data(a, b, pi), size=size)
@@ -188,8 +188,8 @@ def perform_tests(test_count, size=100):
         test_results_b_dif.append(b_dif_std)
         test_results_pi_dif.append(pi_dif_std)
 
-        prob += get_probability(a,b,pi, observations)
-        prob_res += get_probability(a_res, b_res,pi_res, observations)
+        #prob += get_probability(a,b,pi, observations)
+        #prob_res += get_probability(a_res, b_res,pi_res, observations)
 
         #print(a)
         #print(a_res)
@@ -207,9 +207,9 @@ def perform_tests(test_count, size=100):
     print(np.array(test_results_b_dif).mean())
     print(np.array(test_results_pi_dif).mean())
 
-    print
-    print (prob / test_count)
-    print (prob_res / test_count)
+    #print
+    #print (prob / test_count)
+    #print (prob_res / test_count)
 
 perform_tests(1000, size=10)
 # main()
