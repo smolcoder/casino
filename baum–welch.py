@@ -96,22 +96,17 @@ def calcB(seq, gamma):
 
 
 def twoDimDifMax(m1, m2):
-    max = 0.0
+    maximum = 0.
     for i in range(len(m1)):
-        for j in range(len(m1[i])):
-            val = abs(m1[i][j] - m2[i][j])
-            if max < val:
-                max = val
-    return max
+        maximum = max(maximum, oneDimDifMax(m1[i], m2[i]))
+    return maximum
 
 
 def oneDimDifMax(m1, m2):
-    max = 0.0
+    maximum = 0.
     for i in range(len(m1)):
-        val = abs(m1[i] - m2[i])
-        if max < val:
-            max = val
-    return max
+        maximum = max(maximum, abs(m1[i] - m2[i]))
+    return maximum
 
 
 def baum_welch(seq, A, B, PI):

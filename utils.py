@@ -10,6 +10,8 @@ HIDDEN_NODES = 2
 OBSERVED_VALUES = 6
 EPS = 0.001
 
+np.random.seed(31)
+
 
 def get_rounded(matrix, precision=3):
     """
