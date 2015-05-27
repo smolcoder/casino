@@ -1,5 +1,6 @@
 from pprint import pformat
 from utils import DICE_1, DICE_2, random_distribution, get_rounded
+from math import sqrt
 
 
 class CasinoTestData:
@@ -62,7 +63,32 @@ def generate_random_test_data():
     }
     return res
 
+def convert_to_test_data(a, b, pi):
+    res = CasinoTestData()
+    res.start_probability = list_to_dict(pi)
+    res.transition_probability = matrix_to_dict(a, list_to_dict)
+    res.emission_probability = matrix_to_dict(b, em_prob_to_dict)
+    return res
 
-def calculate_std(test_data):
-    # TODO please implement
-    pass
+def list_to_dict(l):
+        return {i: l[i] for i in range(len(l))}
+
+def em_prob_to_dict(l):
+    return {i + 1: l[i] for i in range(len(l))}
+
+def matrix_to_dict(matrix, f):
+    return {i: f(matrix[i]) for i in range(len(matrix))}
+
+def calculate_list_sts(l):
+    return sqrt(sum([i ** 2 for i in l]) / len(l))
+
+def calculate_matrix_std(matrix):
+    return sqrt(sum([sum([i ** 2 for i in row]) for row in matrix]) / (len(matrix) * len(matrix[0])))
+
+def dict_to_matrix(d):
+    return [row.values() for row in d.values()]
+
+def calculate_std(a, b, pi):
+    return calculate_matrix_std(a), \
+           calculate_matrix_std(b), \
+           calculate_list_sts(pi)

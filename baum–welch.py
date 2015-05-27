@@ -1,8 +1,8 @@
 from pprint import pprint
-import random
-from tests import Test1, generate_random_test_data
+import numpy as np
+from tests import *
 from utils import random_distribution, get_rounded, HIDDEN_NODES, OBSERVED_VALUES, EPS, generate_sample
-from utils import random_distribution_list
+from utils import random_distribution_list, get_probability
 
 # A_UNIFORM = [[1. / HIDDEN_NODES for _ in range(HIDDEN_NODES)] for _ in range(HIDDEN_NODES)]
 # B_UNIFORM = [[1. / OBSERVED_VALUES for _ in range(OBSERVED_VALUES)] for _ in range(HIDDEN_NODES)]
@@ -145,16 +145,77 @@ def run_on_seq(seq):
 
 def run_on_test_data(data, size=10):
     observations, _ = generate_sample(data, size=size)
-    return run_on_seq(observations)
+    return run_on_seq(observations), observations
 
 
 def main():
     test = Test1()
-    a, b, pi = run_on_test_data(test)
+    a, b, pi = run_on_test_data(test, size=100)
     pprint(get_rounded(a))
     pprint(get_rounded(b))
     pprint(get_rounded(pi))
+    test_data_dif = CasinoTestData()
+    #print(dict_to_matrix(test.transition_probability))
+    #print(a)
+    a_dif = np.subtract(dict_to_matrix(test.transition_probability), a)
+    b_dif = np.subtract(dict_to_matrix(test.emission_probability), b)
+    pi_dif = np.subtract(test.start_probability.values(), pi)
+    print(calculate_std(dict_to_matrix(test.transition_probability), dict_to_matrix(test.emission_probability), test.start_probability.values()))
+    print(calculate_std(a_dif, b_dif, pi_dif))
 
+def perform_tests(test_count, size=100):
+    test_results_a = []
+    test_results_b = []
+    test_results_pi = []
 
+    test_results_a_dif = []
+    test_results_b_dif = []
+    test_results_pi_dif = []
+
+    prob = 0.0
+    prob_res = 0.0
+    for i in xrange(test_count):
+        a, b, pi = get_initials()
+        (a_res, b_res, pi_res), observations = run_on_test_data(convert_to_test_data(a, b, pi), size=size)
+
+        a_dif = np.subtract(a_res, a)
+        b_dif = np.subtract(b_res, b)
+        pi_dif = np.subtract(pi_res, pi)
+
+        a_std, b_std, pi_std = calculate_std(a, b, pi)
+        test_results_a.append(a_std)
+        test_results_b.append(b_std)
+        test_results_pi.append(pi_std)
+
+        a_dif_std, b_dif_std, pi_dif_std = calculate_std(a_dif, b_dif, pi_dif)
+
+        test_results_a_dif.append(a_dif_std)
+        test_results_b_dif.append(b_dif_std)
+        test_results_pi_dif.append(pi_dif_std)
+
+        prob += get_probability(a,b,pi, observations)
+        prob_res += get_probability(a_res, b_res,pi_res, observations)
+
+        #print(a)
+        #print(a_res)
+        #print(b)
+        #print(b_res)
+        #print(pi)
+        #print(pi_res)
+    print(np.array(test_results_a).mean())
+    print(np.array(test_results_b).mean())
+    print(np.array(test_results_pi).mean())
+
+    print
+
+    print(np.array(test_results_a_dif).mean())
+    print(np.array(test_results_b_dif).mean())
+    print(np.array(test_results_pi_dif).mean())
+
+    print
+    print (prob / test_count)
+    print (prob_res / test_count)
+
+perform_tests(1000, size=10)
 # main()
-print generate_random_test_data()
+# print generate_random_test_data()

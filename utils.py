@@ -8,7 +8,7 @@ DICE_2 = 1
 STATES = (DICE_1, DICE_2)
 HIDDEN_NODES = 2
 OBSERVED_VALUES = 6
-EPS = 1E-100
+EPS = 0.001
 
 
 def get_rounded(matrix, precision=3):
@@ -40,6 +40,22 @@ def random_distribution(length):
         lst += [random.uniform(0., 1. - sum(lst))]
     lst += [1 - sum(lst)]
     return lst
+
+def get_probability(a, b, pi, observations):
+    probabilities = []
+    for i in range(len(pi)):
+        probabilities.append((i, pi[i]))
+    for j in range(len(observations)):
+        c = observations[j]
+        new_probabilities = []
+        for n, prob in probabilities:
+            for i in range(len(a)):
+                new_probabilities.append((i, prob * b[n][c - 1] * (1.0 if (j == len(observations) - 1) else a[n][i])))
+        probabilities = new_probabilities
+    res = 0.0
+    for _, prob in probabilities:
+        res += prob
+    return res
 
 
 def build_distribution(dist, name=None):
