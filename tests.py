@@ -1,5 +1,5 @@
 from pprint import pformat
-from utils import DICE_1, DICE_2, random_distribution, get_rounded
+from utils import DICE_1, DICE_2, random_distribution, get_rounded, random_almost_uniform_distribution
 from math import sqrt
 
 
@@ -44,12 +44,12 @@ class Test1(CasinoTestData):
     }
 
 
-def generate_random_test_data():
+def generate_random_test_data(with_fair=True, almost_uniform=False):
     start = random_distribution(2)
     d1_to_d2 = random_distribution(2)
     d2_to_d1 = random_distribution(2)
-    dice_1 = random_distribution(6)
-    dice_2 = random_distribution(6)
+    dice_1 = [1/6. for _ in range(6)] if with_fair else random_distribution(6)
+    dice_2 = random_almost_uniform_distribution() if almost_uniform else random_distribution(6)
 
     res = CasinoTestData()
     res.start_probability = {DICE_1: start[0], DICE_2: start[1]}

@@ -55,6 +55,7 @@ def get_mean_hamming(data, test_count=10, size=50):
 def count_statistics():
     means = []
     for _ in range(50):
+        # data = generate_random_test_data()
         data = generate_random_test_data()
         means.append(get_mean_hamming(data))
     means = np.array(means)

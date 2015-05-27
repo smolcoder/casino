@@ -63,6 +63,15 @@ def get_probability(a, b, pi, observations):
     return prob
 
 
+def random_almost_uniform_distribution():
+    a, b = random.randint(1, 100), random.randint(1, 100)
+    a, b = min(a, b), max(a, b)
+    perm = [a, a, a, a, a, b]
+    random.shuffle(perm)
+    s = float(sum(perm))
+    return [x / s for x in perm]
+
+
 def build_distribution(dist, name=None):
     return stats.rv_discrete(values=(np.array(dist.keys()), np.array(dist.values())),
                              name=name)
