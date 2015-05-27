@@ -1,34 +1,12 @@
+from pprint import pprint
 import random
+from tests import Test1, generate_random_test_data
+from utils import random_distribution, get_rounded, HIDDEN_NODES, OBSERVED_VALUES, EPS, generate_sample
+from utils import random_distribution_list
 
-HIDDEN_NODES = 2
-OBSERVED_VALUES = 6
-EPS = 0.001
-
-A_UNIFORM = [[1.0 / HIDDEN_NODES for _ in range(HIDDEN_NODES)] for _ in range(HIDDEN_NODES)]
-B_UNIFORM = [[1.0 / OBSERVED_VALUES for _ in range(OBSERVED_VALUES)] for _ in range(HIDDEN_NODES)]
-PI_UNIFORM = [1.0 / HIDDEN_NODES for _ in range(HIDDEN_NODES)]
-
-def randomMatrix(lenA, lenB):
-    result = []
-    for i in range(lenA):
-        result += [randomArray(lenB)]
-    return result
-
-def randomArray(length):
-    lst = []
-    for j in range(length - 1):
-        lst += [random.uniform(0.0, 1.0 - sum(lst))]
-    lst += [1.0 - sum(lst)]
-    return lst
-
-A_RANDOM = randomMatrix(HIDDEN_NODES, HIDDEN_NODES)
-B_RANDOM = randomMatrix(HIDDEN_NODES, OBSERVED_VALUES)
-PI_RANDOM = randomArray(HIDDEN_NODES)
-
-EXAMPLE_SEQ = [6, 6, 6]
-
-SEQ_LENGTH = 10
-RANDOM_SEQ = [random.randint(1, OBSERVED_VALUES) for _ in range(SEQ_LENGTH)]
+# A_UNIFORM = [[1. / HIDDEN_NODES for _ in range(HIDDEN_NODES)] for _ in range(HIDDEN_NODES)]
+# B_UNIFORM = [[1. / OBSERVED_VALUES for _ in range(OBSERVED_VALUES)] for _ in range(HIDDEN_NODES)]
+# PI_UNIFORM = [1. / HIDDEN_NODES for _ in range(HIDDEN_NODES)]
 
 
 def calcAlpha(seq, A, B, PI):
@@ -152,13 +130,31 @@ def baum_welch(seq, A, B, PI):
         PI = PI_STAR
     return None
 
-print(A_RANDOM)
-print(B_RANDOM)
-print(PI_RANDOM)
-print(RANDOM_SEQ)
-print()
 
-A_RES, B_RES, PI_RES = baum_welch(RANDOM_SEQ, A_RANDOM, B_RANDOM, PI_RANDOM)
-print(A_RES)
-print(B_RES)
-print(PI_RES)
+def get_initials():
+    A = random_distribution_list(HIDDEN_NODES, HIDDEN_NODES)
+    B = random_distribution_list(HIDDEN_NODES, OBSERVED_VALUES)
+    PI = random_distribution(HIDDEN_NODES)
+    return A, B, PI
+
+
+def run_on_seq(seq):
+    A, B, PI = get_initials()
+    return baum_welch(seq, A, B, PI)
+
+
+def run_on_test_data(data, size=10):
+    observations, _ = generate_sample(data, size=size)
+    return run_on_seq(observations)
+
+
+def main():
+    test = Test1()
+    a, b, pi = run_on_test_data(test)
+    pprint(get_rounded(a))
+    pprint(get_rounded(b))
+    pprint(get_rounded(pi))
+
+
+# main()
+print generate_random_test_data()
