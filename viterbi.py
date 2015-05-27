@@ -34,7 +34,7 @@ def viterbi(observations, start_p, trans_p, emit_p):
     return prob, path[state]
 
 
-def get_mean_hamming(data, test_count=20, size=20):
+def get_mean_hamming(data, test_count=10, size=50):
     test_results = []
     for i in xrange(test_count):
         observations, result_states = generate_sample(data, size=size)
@@ -54,7 +54,7 @@ def get_mean_hamming(data, test_count=20, size=20):
 
 def count_statistics():
     means = []
-    for _ in range(100):
+    for _ in range(50):
         data = generate_random_test_data()
         means.append(get_mean_hamming(data))
     means = np.array(means)
