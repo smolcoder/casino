@@ -118,17 +118,17 @@ def baum_welch(seq, A, B, PI):
         PI_STAR = calcPI(gamma)
         A_STAR = calcA(ksi, gamma, len(seq))
         B_STAR = calcB(seq, gamma)
-        if twoDimDifMax(A, A_STAR) < EPS and twoDimDifMax(B, B_STAR) < EPS and oneDimDifMax(PI, PI_STAR) < EPS:
+        if twoDimDifMax(A, A_STAR) < EPS and oneDimDifMax(B[1], B_STAR[1]) < EPS and oneDimDifMax(PI, PI_STAR) < EPS:
             return A, B, PI
         A = A_STAR
-        B = B_STAR
+        B[1] = B_STAR[1]
         PI = PI_STAR
     return None
 
 
 def get_initials():
     A = random_distribution_list(HIDDEN_NODES, HIDDEN_NODES)
-    B = random_distribution_list(HIDDEN_NODES, OBSERVED_VALUES)
+    B = [[1/6. for _ in range(6)], random_distribution(6)]
     PI = random_distribution(HIDDEN_NODES)
     return A, B, PI
 
@@ -171,6 +171,7 @@ def perform_tests(test_count, size=100):
     #prob_res = 0.0
     for i in xrange(test_count):
         a, b, pi = get_initials()
+        b = [[1/6. for _ in range(6)], random_distribution(6)]
         (a_res, b_res, pi_res), observations = run_on_test_data(convert_to_test_data(a, b, pi), size=size)
 
         a_dif = np.subtract(a_res, a)
@@ -211,6 +212,6 @@ def perform_tests(test_count, size=100):
     #print (prob / test_count)
     #print (prob_res / test_count)
 
-perform_tests(1000, size=10)
+perform_tests(1000, size=100)
 # main()
 # print generate_random_test_data()
