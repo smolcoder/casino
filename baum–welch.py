@@ -2,7 +2,7 @@ from pprint import pprint
 import numpy as np
 from tests import *
 from utils import random_distribution, get_rounded, HIDDEN_NODES, OBSERVED_VALUES, EPS, generate_sample
-from utils import random_distribution_list, get_probability
+from utils import random_distribution_list, get_probability, direction_match
 
 # A_UNIFORM = [[1. / HIDDEN_NODES for _ in range(HIDDEN_NODES)] for _ in range(HIDDEN_NODES)]
 # B_UNIFORM = [[1. / OBSERVED_VALUES for _ in range(OBSERVED_VALUES)] for _ in range(HIDDEN_NODES)]
@@ -159,19 +159,16 @@ def main():
     print(calculate_std(a_dif, b_dif, pi_dif))
 
 def perform_tests(test_count, size=100):
-    test_results_a = []
+    test_results_a = 0
     test_results_b = []
-    test_results_pi = []
+    test_results_pi = 0
 
-    test_results_a_dif = []
     test_results_b_dif = []
-    test_results_pi_dif = []
 
     #prob = 0.0
     #prob_res = 0.0
     for i in xrange(test_count):
         a, b, pi = get_initials()
-        b = [[1/6. for _ in range(6)], random_distribution(6)]
         (a_res, b_res, pi_res), observations = run_on_test_data(convert_to_test_data(a, b, pi), size=size)
 
         a_dif = np.subtract(a_res, a)
@@ -179,15 +176,15 @@ def perform_tests(test_count, size=100):
         pi_dif = np.subtract(pi_res, pi)
 
         a_std, b_std, pi_std = calculate_std(a, b, pi)
-        test_results_a.append(a_std)
         test_results_b.append(b_std)
-        test_results_pi.append(pi_std)
 
         a_dif_std, b_dif_std, pi_dif_std = calculate_std(a_dif, b_dif, pi_dif)
-
-        test_results_a_dif.append(a_dif_std)
         test_results_b_dif.append(b_dif_std)
-        test_results_pi_dif.append(pi_dif_std)
+
+        for i in range(len(a)):
+            test_results_a += direction_match(a[i], a_res[i])
+
+        test_results_pi += direction_match(pi, pi_res)
 
         #prob += get_probability(a,b,pi, observations)
         #prob_res += get_probability(a_res, b_res,pi_res, observations)
@@ -198,20 +195,9 @@ def perform_tests(test_count, size=100):
         #print(b_res)
         #print(pi)
         #print(pi_res)
-    print(np.array(test_results_a).mean())
-    print(np.array(test_results_b).mean())
-    print(np.array(test_results_pi).mean())
 
-    print
-
-    print(np.array(test_results_a_dif).mean())
-    print(np.array(test_results_b_dif).mean())
-    print(np.array(test_results_pi_dif).mean())
-
-    #print
-    #print (prob / test_count)
-    #print (prob_res / test_count)
+    print(float(test_results_a) / 2 / test_count)
+    print(np.array(test_results_b_dif).mean() / np.array(test_results_b).mean())
+    print(float(test_results_pi) / test_count)
 
 perform_tests(1000, size=100)
-# main()
-# print generate_random_test_data()

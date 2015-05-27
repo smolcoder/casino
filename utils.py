@@ -71,6 +71,12 @@ def random_almost_uniform_distribution():
     s = float(sum(perm))
     return [x / s for x in perm]
 
+def direction_match(prob1, prob2):
+    if (prob1[0] >= 0.5 and prob2[0] >= 0.5):
+        return 1
+    if (prob1[0] < 0.5 and prob2[0] < 0.5):
+        return 1
+    return 0
 
 def build_distribution(dist, name=None):
     return stats.rv_discrete(values=(np.array(dist.keys()), np.array(dist.values())),
