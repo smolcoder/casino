@@ -8,7 +8,9 @@ DICE_2 = 1
 STATES = (DICE_1, DICE_2)
 HIDDEN_NODES = 2
 OBSERVED_VALUES = 6
-EPS = 1E-100
+EPS = 0.001
+
+np.random.seed(31)
 
 
 def get_rounded(matrix, precision=3):
